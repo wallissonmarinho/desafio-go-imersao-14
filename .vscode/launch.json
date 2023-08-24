@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Imersão 14",
+        "type": "go",
+        "request": "launch",
+        "mode": "auto",
+        "program": "${workspaceRoot}/cmd/main.go",
+        "env": {
+          "PORT":"9950",
+        }
+      }
+    ]
+  }
