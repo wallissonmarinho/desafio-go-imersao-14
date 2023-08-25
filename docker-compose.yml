@@ -1,6 +1,25 @@
 version: "3"
 
 services:
+
+  mysql:
+    image: mysql:8.0.30-debian
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: routes
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./.docker/mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysql" ,"-h", "mysql", "-P", "3306", "-u", "root", "-e", "SELECT 1", "cache"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      
   app:
     build: .
     container_name: app
@@ -10,19 +29,4 @@ services:
       - mysql
     extra_hosts:
       - "host.docker.internal:172.17.0.1"
-
-  mysql:
-    image: mysql:8.0.30-debian
-    container_name: mysql
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: routes
-    healthcheck:
-      test: out=$$(mysqladmin ping -h localhost -P 3306 -u root --password=root 2>&1); echo $$out | grep 'mysqld is alive' || { echo $$out; exit 1; }
-    ports:
-      - "3306:3306"
-    volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-      - ./.docker/mysql:/var/lib/mysql
       
