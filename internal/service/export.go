@@ -1,8 +1,10 @@
 package service
 
 import (
+	"database/sql"
+
 	"github.com/go-kit/log"
-	"github.com/jmoiron/sqlx"
+
 	Route "github.com/wallissonmarinho/desafio-go-imersao-14/internal/service/route"
 )
 
@@ -14,7 +16,7 @@ type serviceFactory struct {
 	RouteService Route.Service
 }
 
-func NewServiceFactory(db *sqlx.DB, logger log.Logger) ServiceFactory {
+func NewServiceFactory(db *sql.DB, logger log.Logger) ServiceFactory {
 	return &serviceFactory{
 		RouteService: Route.NewService(logger, db),
 	}

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"net/http"
 	"os"
@@ -9,7 +10,7 @@ import (
 	kitlog "github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/jmoiron/sqlx"
+
 	"github.com/sirupsen/logrus"
 
 	"github.com/wallissonmarinho/desafio-go-imersao-14/internal/endpoint"
@@ -29,14 +30,15 @@ func main() {
 		)
 	}
 
-	var db *sqlx.DB
-	// {
-	// 	var err error
-	// 	db, err = sqlx.Open("", "")
-	// 	if err != nil {
-	// 		os.Exit(-1)
-	// 	}
-	// }
+	var db *sql.DB
+	{
+		var err error
+		db, err = sql.Open("mysql", "root:root@tcp(host.docker.internal:3306)/routes")
+		if err != nil {
+			os.Exit(-1)
+		}
+	}
+	defer db.Close()
 
 	level.Info(logger)
 	defer level.Info(logger)
@@ -50,8 +52,8 @@ func main() {
 
 	go func() {
 		server := &http.Server{
-			Addr:    fmt.Sprintf(":%s", "5000"),
-			Handler: transHttp.NewService(context, db, &endpoint, &logger),
+			Addr:    fmt.Sprintf(":%s", "8080"),
+			Handler: transHttp.NewService(context, &endpoint, &logger),
 		}
 		err <- server.ListenAndServe()
 	}()
